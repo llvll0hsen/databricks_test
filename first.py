@@ -21,3 +21,6 @@ print("there there")
 
 
 print("hihihhihi")
+
+
+print(1+1)
