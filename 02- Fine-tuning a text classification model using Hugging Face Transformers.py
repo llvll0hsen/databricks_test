@@ -3,15 +3,15 @@
 # MAGIC # Tune a text classification model with Hugging Face Transformers
 # MAGIC This notebook trains a SMS spam classifier with "distillibert-base-uncased" as the base model on a single GPU machine
 # MAGIC using the [🤗&nbsp;Transformers](https://huggingface.co/docs/transformers/index) library.
-# MAGIC 
+# MAGIC
 # MAGIC It first downloads a small dataset, copies it to [DBFS](https://docs.databricks.com/dbfs/index.html), then converts it to a Spark DataFrame. Preprocessing up to tokenization is done on Spark. While DBFS is used as a convenience to access the datasets directly as local files on the driver, you can modify it to avoid use of DBFS. 
-# MAGIC 
+# MAGIC
 # MAGIC Text tokenization of the SMS messages is done in `transformers` in the model's default tokenizer in order to have consistency in tokenization with the base model. The notebook uses the [Trainer](https://huggingface.co/docs/transformers/main_classes/trainer) utility in the `transformers` library to fine-tune the model. The notebook wraps the tokenizer and trained model in a Transformers `pipeline` and logs the pipeline as an MLflow model. 
 # MAGIC This make it easy to directly apply the pipeline as a UDF on Spark DataFrame string columns.
-# MAGIC 
+# MAGIC
 # MAGIC ## Cluster setup
 # MAGIC For this notebook, Databricks recommends a single GPU cluster, such as a `g4dn.xlarge` on AWS or `Standard_NC4as_T4_v3` on Azure. You can [create a single machine cluster](https://docs.databricks.com/clusters/configure.html) using the personal compute policy or by choosing "Single Node" when creating a cluster. This notebook works with Databricks Runtime ML GPU version 11.1 or greater. Databricks Runtime ML GPU versions 9.1 through 10.4 can be used by replacing the following command with `%pip install --upgrade transformers datasets evaluate`.
-# MAGIC 
+# MAGIC
 # MAGIC The `transformers` library is installed by default on Databricks Runtime ML. This notebook also requires [🤗&nbsp;Datasets](https://huggingface.co/docs/datasets/index) and [🤗&nbsp;Evaluate](https://huggingface.co/docs/evakyate/index), which you can install using `%pip`.
 
 # COMMAND ----------
@@ -76,7 +76,7 @@ sms.count()
 
 # MAGIC %md
 # MAGIC # Data preparation
-# MAGIC 
+# MAGIC
 # MAGIC This approach works for datasets that are static snapshots parquet files. The datasets passed into the transformers trainer for 
 # MAGIC text classification need to have integer labels [0, 1]. Since the notebook loads the datasets directly from the parquet files, 
 # MAGIC do any preprocessing before writing the files. By using DBFS, you  can reference "local" paths when creating the 
@@ -139,10 +139,10 @@ train_test = load_dataset("parquet", data_files={"train":f"/dbfs{train_dbfs_path
 
 # MAGIC %md
 # MAGIC If you wish to avoid using DBFS root storage to access the data from the driver and the train and test tables are small, you could alternatively collect them onto the driver and write to local disk using the folowing:
-# MAGIC 
+# MAGIC
 # MAGIC     train_file = "train.parquet"
 # MAGIC     test_file = "test.parquet"
-# MAGIC 
+# MAGIC
 # MAGIC     train.toPandas().to_parquet(train_files[0])
 # MAGIC     test.toPandas().to_parquet(test_files[0])   
 # MAGIC     
